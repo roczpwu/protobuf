@@ -16,6 +16,13 @@ config_setting(
 )
 
 ################################################################################
+# ZLIB configuration
+################################################################################
+ZLIB_DEPS = [
+    "//external:zlib",
+]
+
+################################################################################
 # Protobuf Runtime Library
 ################################################################################
 
@@ -101,6 +108,11 @@ cc_library(
     visibility = ["//visibility:public"],
 )
 
+PROTOBUF_DEPS = select({
+    ":msvc": [],
+    "//conditions:default": ZLIB_DEPS,
+})
+
 cc_library(
     name = "protobuf",
     srcs = [
@@ -166,7 +178,7 @@ cc_library(
     includes = ["src/"],
     linkopts = LINK_OPTS,
     visibility = ["//visibility:public"],
-    deps = [":protobuf_lite"],
+    deps = [":protobuf_lite"] + PROTOBUF_DEPS,
 )
 
 # This provides just the header files for use in projects that need to build
